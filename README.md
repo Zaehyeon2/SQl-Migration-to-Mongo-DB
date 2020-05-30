@@ -21,7 +21,7 @@ Migration using largeRelationsInsertFile.sql
 
     
     // using_insertfile.py
-    7 connection = pymongo.MongoClient(hostip(default="127.0.0.1", port(default=27017))
+    7| connection = pymongo.MongoClient(hostip(default="127.0.0.1", port(default=27017))
     //
     
     $ python3 using_insertfile.py
@@ -31,6 +31,7 @@ Migration using largeRelationsInsertFile.sql
 Migration using Oracle Database
 
     $ sqlplus username(mongo)/password(mongo)
+    
     SQL> c@DDL+drop.sql
     SQL> c@largeRelationsInsertFile.sql
     SQL> exit
