@@ -38,7 +38,7 @@ Migration using Oracle Database
     Disconnected from Oracle Database 11g Express Edition Release 11.2.0.2.0 - 64bit Production
     
     // using_oracledb.py
-    7 | connection = pymongo.MongoClient(hostip(default="127.0.0.1", port(default=27017))
+    7 | connection = pymongo.MongoClient(host_ip(default="127.0.0.1"), port(default=27017))
     13| oconnection = cx_Oracle.connect(username(defalut='mongo'), password(defalut='mongo'), host(defalut='localhost:1521'))
     //
     
