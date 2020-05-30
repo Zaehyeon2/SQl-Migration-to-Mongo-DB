@@ -21,7 +21,7 @@ Migration using largeRelationsInsertFile.sql
 
     
     // using_insertfile.py
-    7| connection = pymongo.MongoClient(hostip(default="127.0.0.1", port(default=27017))
+    7| connection = pymongo.MongoClient(hostip(default="127.0.0.1"), port(default=27017))
     //
     
     $ python3 using_insertfile.py
