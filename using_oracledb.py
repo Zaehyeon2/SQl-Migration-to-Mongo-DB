@@ -1,16 +1,16 @@
+import os
 import cx_Oracle
 import json
 from pprint import pprint
 import pymongo
 from bson.objectid import ObjectId
 
-connection = pymongo.MongoClient("127.0.0.1", 27017)
+connection = pymongo.MongoClient("localhost", 27017)
 
-#한글 지원 방법
-import os
+# 한글 지원 방법
 os.putenv('NLS_LANG', '.UTF8')
 
-oconnection = cx_Oracle.connect('mongo','mongo','localhost:1521')
+oconnection = cx_Oracle.connect('system/oracle@0.0.0.0:1521')
 
 cursor = oconnection.cursor()
 
@@ -68,7 +68,7 @@ for token in cursor:
     # dictionry에 key(dept_name) - value(dept_name, building, budget) 쌍으로 저장
     department[dept_name] = {
         'dept_name': dept_name,
-        'building' : building,
+        'building': building,
         'budget': budget
     }
 
@@ -85,14 +85,14 @@ for token in cursor:
     if building in classroom.keys():
         classroom[building][roomnumber] = {
             'building': building,
-            'room_number' : roomnumber,
+            'room_number': roomnumber,
             'capacity': capacity
         }
     else:
         classroom[building] = dict()
         classroom[building][roomnumber] = {
             'building': building,
-            'room_number' : roomnumber,
+            'room_number': roomnumber,
             'capacity': capacity
         }
 
@@ -126,7 +126,7 @@ for token in cursor:
     dept_name = token[2]
     salary = float(token[3])
     Json = {
-        'ID' : ID,
+        'ID': ID,
         'name': Name,
         'salary': int(salary),
         'department': department[dept_name],
@@ -144,7 +144,7 @@ for token in cursor:
     dept_name = token[2]
     tot_credit = int(token[3])
     Json = {
-        'ID' : ID,
+        'ID': ID,
         'name': Name,
         'tot_credit': tot_credit,
         'department': department[dept_name],
@@ -162,7 +162,7 @@ for token in cursor:
     dept_name = token[2]
     credits = int(token[3])
     Json = {
-        'course_id' : course_id,
+        'course_id': course_id,
         'title': title,
         'credits': credits,
         'department': department[dept_name],
@@ -196,7 +196,7 @@ for token in cursor:
     roomnumber = token[5]
     time_slot_id = token[6]
     Json = {
-        'course' : course[course_id],
+        'course': course[course_id],
         'section_id': section_id,
         'semester': semester,
         'year': year,
@@ -233,7 +233,7 @@ for token in cursor:
     s_obi = studentdb.find_one({'ID': s_id})['_id']
     i_obi = instructordb.find_one({'ID': i_id})['_id']
 
-    instructordb.update_one({'ID' : i_id}, {'$set': {'advisor' : s_obi}})
+    instructordb.update_one({'ID': i_id}, {'$set': {'advisor': s_obi}})
     studentdb.update_one({'ID': s_id}, {'$set': {'advisor': i_obi}})
 
 cursor.execute("""
@@ -250,12 +250,13 @@ for token in cursor:
 
     s_obi = studentdb.find_one({'ID': ID})['_id']
 
-    sec_obi = sectiondb.find_one({'course': course[course_id], 'section_id': sec_id, 'semester': seme, 'year': year})['_id']
+    sec_obi = sectiondb.find_one(
+        {'course': course[course_id], 'section_id': sec_id, 'semester': seme, 'year': year})['_id']
 
     Json = {
         'section_id': sec_obi,
         'student_id': s_obi,
-        'grade': grade 
+        'grade': grade
     }
     takesdb.insert_one(Json)
 
@@ -269,9 +270,10 @@ for token in cursor:
     sec_id = token[2]
     semester = token[3]
     year = int(token[4])
-    
+
     i_obi = instructordb.find_one({'ID': i_id})['_id']
-    sec_obi = sectiondb.find_one({'course': course[course_id], 'section_id': sec_id, 'semester': semester, 'year': year})['_id']
+    sec_obi = sectiondb.find_one(
+        {'course': course[course_id], 'section_id': sec_id, 'semester': semester, 'year': year})['_id']
 
     Json = {
         'instructor_id': i_obi,
