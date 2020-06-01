@@ -14,10 +14,20 @@ oconnection = cx_Oracle.connect('mongo','mongo','localhost:1521')
 
 cursor = oconnection.cursor()
 
-cursor.execute("""
-    select * from DEPARTMENT
-""")
+db = connection.DATABASE
 
+instructordb = db['INSTRUCTOR']
+studentdb = db['STUDENT']
+takesdb = db['TAKES']
+sectiondb = db['SECTION']
+teachesdb = db['TEACHES']
+
+# collection 초기화
+instructordb.delete_many({})
+studentdb.delete_many({})
+takesdb.delete_many({})
+sectiondb.delete_many({})
+teachesdb.delete_many({})
 
 # embedding 하기 위한 dictionary
 department = {
@@ -36,12 +46,16 @@ time_slot = {
 
 }
 
+course = {
+
+}
+
 # collectio 저장 배열
 instructor = []
 student = []
 section = []
-course = []
 takes = []
+teaches = []
 
 cursor.execute("""
     select * from DEPARTMENT
@@ -116,7 +130,6 @@ for token in cursor:
         'name': Name,
         'salary': int(salary),
         'department': department[dept_name],
-        'section_id': [],
         'advisor': ''
     }
     instructor.append(Json)
@@ -140,30 +153,6 @@ for token in cursor:
     student.append(Json)
 
 cursor.execute("""
-    select * from SECTION
-""")
-
-for token in cursor:
-    course_id = token[0]
-    section_id = token[1]
-    semester = token[2]
-    year = int(token[3])
-    building = token[4]
-    roomnumber = token[5]
-    time_slot_id = token[6]
-    Json = {
-        'course_id' : course_id,
-        'section_id': section_id,
-        'semester': semester,
-        'year': year,
-        'time_slot': '',
-        'classroom': classroom[building][roomnumber]
-    }
-    if time_slot_id in time_slot.keys():
-        Json['time_slot'] = time_slot[time_slot_id]
-    section.append(Json)
-
-cursor.execute("""
     select * from COURSE
 """)
 
@@ -177,30 +166,60 @@ for token in cursor:
         'title': title,
         'credits': credits,
         'department': department[dept_name],
-        'prereq_id': [],
+        'prereq': [],
     }
-    course.append(Json)
+    course[course_id] = Json
 
-db = connection.DATABASE
+cursor.execute("""
+    select * from PREREQ
+""")
 
-instructordb = db['INSTRUCTOR']
-studentdb = db['STUDENT']
-takesdb = db['TAKES']
-sectiondb = db['SECTION']
-coursedb = db['COURSE']
+for token in cursor:
+    course_id = token[0]
+    prereq_id = token[1]
 
-# collection 초기화
-instructordb.delete_many({})
-studentdb.delete_many({})
-takesdb.delete_many({})
-sectiondb.delete_many({})
-coursedb.delete_many({})
+    Json = course[prereq_id].copy()
+    Json.pop('prereq')
+    course[course_id]['prereq'].append(Json)
+
+
+cursor.execute("""
+    select * from SECTION
+""")
+
+for token in cursor:
+    course_id = token[0]
+    section_id = token[1]
+    semester = token[2]
+    year = int(token[3])
+    building = token[4]
+    roomnumber = token[5]
+    time_slot_id = token[6]
+    Json = {
+        'course' : course[course_id],
+        'section_id': section_id,
+        'semester': semester,
+        'year': year,
+        'time_slot': '',
+        'classroom': classroom[building][roomnumber]
+    }
+    if time_slot_id in time_slot.keys():
+        Json['time_slot'] = time_slot[time_slot_id]
+    section.append(Json)
+
+
+print("----------------------on--------------------")
 
 # collection에 link 제외한 embed 저장
 instructordb.insert_many(instructor)
+print("----------------------on--------------------")
+
 studentdb.insert_many(student)
+print("----------------------on--------------------")
+
 sectiondb.insert_many(section)
-coursedb.insert_many(course)
+
+print("----------------------on--------------------")
 
 # link 연결
 cursor.execute("""
@@ -218,22 +237,6 @@ for token in cursor:
     studentdb.update_one({'ID': s_id}, {'$set': {'advisor': i_obi}})
 
 cursor.execute("""
-    select * from SECTION
-""")
-
-for token in cursor:
-    course_id = token[0]
-    section_id = token[1]
-    semester = token[2]
-    year = int(token[3])
-    building = token[4]
-    roomnumber = token[5]
-    time_slot_id = token[6]
-
-    c_obi = coursedb.find_one({'course_id' : course_id})['_id']
-    sectiondb.update({'course_id': course_id}, {'$set': {'course_id' : c_obi}})
-
-cursor.execute("""
     select * from TAKES
 """)
 
@@ -245,10 +248,9 @@ for token in cursor:
     year = int(token[4])
     grade = token[5]
 
-    c_obi = coursedb.find_one({'course_id' : course_id})['_id']
     s_obi = studentdb.find_one({'ID': ID})['_id']
 
-    sec_obi = sectiondb.find_one({'course_id': c_obi, 'section_id': sec_id, 'semester': seme, 'year': year})['_id']
+    sec_obi = sectiondb.find_one({'course': course[course_id], 'section_id': sec_id, 'semester': seme, 'year': year})['_id']
 
     Json = {
         'section_id': sec_obi,
@@ -256,19 +258,6 @@ for token in cursor:
         'grade': grade 
     }
     takesdb.insert_one(Json)
-
-cursor.execute("""
-    select * from PREREQ
-""")
-
-for token in cursor:
-    course_id = token[0]
-    prereq_id = token[1]
-
-    c_obi = coursedb.find_one({'course_id' : course_id})['_id']
-    p_obi = coursedb.find_one({'course_id' : prereq_id})['_id']
-
-    coursedb.update({'course_id': course_id}, {'$push' : {'prereq_id': p_obi}})
 
 cursor.execute("""
     select * from TEACHES
@@ -281,8 +270,14 @@ for token in cursor:
     semester = token[3]
     year = int(token[4])
     
-    c_obi = coursedb.find_one({'course_id' : course_id})['_id']
+    i_obi = instructordb.find_one({'ID': i_id})['_id']
+    sec_obi = sectiondb.find_one({'course': course[course_id], 'section_id': sec_id, 'semester': semester, 'year': year})['_id']
 
-    sec_obi = sectiondb.find_one({'course_id': c_obi, 'section_id': sec_id, 'semester': semester, 'year': year})['_id']
+    Json = {
+        'instructor_id': i_obi,
+        'section_id': sec_obi
+    }
 
-    instructordb.update({'ID': i_id}, {'$push' : {'section_id': sec_obi}})
+    teaches.append(Json)
+
+teachesdb.insert_many(teaches)
