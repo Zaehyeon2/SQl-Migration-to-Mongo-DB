@@ -51,7 +51,7 @@ db.INSTRUCTOR.aggregate([
 ```
 ![image](https://user-images.githubusercontent.com/22045163/83503073-84357b00-a4fd-11ea-8df9-e1c68254241c.png)
 
-3. 교수가 가르치는 과목명을 도출하여라.
+3. 교수가 자신의 학과에서 가르치는 과목에 대하여 교수명과 과목명을 도출하여라.
 ```SQL
 SELECT name, title
 FROM instructor NATURAL JOIN teaches NATURAL JOIN course

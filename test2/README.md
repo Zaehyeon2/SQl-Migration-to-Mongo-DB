@@ -140,3 +140,10 @@ FROM instructor
 GROUP BY dept_name
 ```
 ![image](https://user-images.githubusercontent.com/22045163/83493371-a6280100-a4ef-11ea-976f-96eca7a036b8.png)
+
+### 결과
+1. 0.001s
+2. 0.016s
+3. 0.027s
+4. 0.005s
+5. 0.001s
