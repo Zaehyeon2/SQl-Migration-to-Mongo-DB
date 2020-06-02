@@ -98,7 +98,7 @@ db.TEACHES.aggregate([
   { $sort : { 'name': 1, 'title': 1 }},
 ]);
 ```
-맙소사... 얘는 TEST1이 aggregation 이 빡세서 그런가 TEST1보다 빠르다. 0.5배
+맙소사... 얘는 TEST1이 aggregation 이 빡세서 그런가 TEST1보다 조금 더 빠르다.
 
 ![image](https://user-images.githubusercontent.com/22045163/83493108-44679700-a4ef-11ea-9a79-769ecfb77837.png)
 
