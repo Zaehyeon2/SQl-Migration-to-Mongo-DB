@@ -129,8 +129,11 @@ GROUP BY dept_name
 
 
 ## 토론
+
 TEACHES에 dept_name이 들어가는 것이 맞는가?
+
 (3번 문제를 풀 방법이 없는 줄 알고 추가한건데, 방법이 있다. ㅎㅎ 그런데 그렇다면 0.027초)
+
 ```js
 db.TEACHES.aggregate([
    {
