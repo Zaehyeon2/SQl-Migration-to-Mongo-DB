@@ -30,7 +30,7 @@ SELECT name, title
 FROM instructor NATURAL JOIN teaches NATURAL JOIN course
 ```
 (마찬가지로 forEach, collection 3개 참조보다 좋은 성능)
-![image](https://user-images.githubusercontent.com/22045163/83443314-7db6ed00-a484-11ea-86a1-3eda7eb7b71d.png)
+![image](https://user-images.githubusercontent.com/22045163/83537684-d7c0bc80-a52f-11ea-9da3-f14071ae54d8.png)
 
 4. 2009년 가을, 2010년 봄에 열린 과목들 중 공통되는 과목을 도출하여라.
 ```SQL
