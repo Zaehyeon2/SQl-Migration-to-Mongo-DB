@@ -55,6 +55,7 @@ db.TEACHES.aggregate([
 ```
 
 collection 3개를 참고하기 때문에, TEST1 대비 1.7배 정도 느리다.
+
 ![image](https://user-images.githubusercontent.com/22045163/83492713-a5db3600-a4ee-11ea-8cec-b20d85f80312.png)
 
 3. 교수가 자신의 학과에서 가르치는 과목에 대하여 교수명과 과목명을 도출하여라.
@@ -108,6 +109,9 @@ db.TEACHES.aggregate([
   { $sort : { 'name': 1, 'title': 1 }},
 ]);
 ```
+
+마찬가지로, TEST1보다 1.4배 정도 느리다.
+
 ![image](https://user-images.githubusercontent.com/22045163/83509168-fd38d080-a505-11ea-9eea-0b1743229234.png)
 
 4. 2009년 가을, 2010년 봄에 열린 과목들 중 공통되는 과목을 도출하여라.
@@ -124,7 +128,9 @@ INTERSECT
     WHERE semester = 'Spring' and year = 2010
 )
 ```
+
 여전히... forEach... 방법 없나..
+
 ![image](https://user-images.githubusercontent.com/22045163/83493310-8ee91380-a4ef-11ea-979e-ece3bb6a9169.png)
 
 5. 학과 별 교수들 연봉의 평균을 도출하여라.
