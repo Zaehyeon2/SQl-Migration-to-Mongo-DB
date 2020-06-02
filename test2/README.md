@@ -3,7 +3,7 @@
 ## MongoDB Collections
 ![image](https://user-images.githubusercontent.com/22045163/83492543-657bb800-a4ee-11ea-8a03-58d67078f2fd.png)
 
-TEACHES collection => section_id, instructor_id, dept_name
+TEACHES collection => section_id, instructor_id
 
 ## Query Performance
 
