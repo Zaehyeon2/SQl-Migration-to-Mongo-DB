@@ -59,8 +59,8 @@ db.INSTRUCTOR.aggregate([
 ![image](https://user-images.githubusercontent.com/22045163/83544513-f7101780-a538-11ea-864a-caaa47f8802a.png)
 
 
-3. 교수가 자신의 학과에서 가르치는 과목에 대하여 교수명과 과목명을 도출하여라. (0.019 sec.)
-** natural join은 그 의미 및 결과가 2번과 다름. (총 84개 row, 공통 필드 ID, course_id, dept_name)
+3. 교수가 자신의 학과에서 가르치는 과목에 대하여 교수명과 과목명을 도출하여라. (0.019 sec.)  
+※ natural join은 그 의미 및 결과가 2번과 다름. (총 84개 row, 공통 필드 ID, course_id, dept_name)
 
 ```SQL
 SELECT name, title
