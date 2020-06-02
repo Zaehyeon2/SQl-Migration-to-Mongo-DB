@@ -126,3 +126,55 @@ FROM instructor
 GROUP BY dept_name
 ```
 ![image](https://user-images.githubusercontent.com/22045163/83493371-a6280100-a4ef-11ea-976f-96eca7a036b8.png)
+
+
+## 토론
+TEACHES에 dept_name이 들어가는 것이 맞는가?
+(3번 문제를 풀 방법이 없는 줄 알고 추가한건데, 방법이 있다. ㅎㅎ 그런데 그렇다면 0.027초)
+```js
+db.TEACHES.aggregate([
+   {
+     $lookup:
+       {
+         from: "INSTRUCTOR",
+         localField: "instructor_id",
+         foreignField: "_id",
+         as: "instructor"
+       }
+  },
+  { "$unwind": "$instructor" },
+  {
+    $lookup:
+    {
+         from: "SECTION",
+         let: { section_id: "$section_id", dept_name: "$instructor.department.dept_name" },
+         pipeline: [
+              { $match:
+                 { $expr:
+                    { $and:
+                       [
+                         { $eq: [ "$_id",  "$$section_id" ] },
+                         { $eq: [ "$course.department.dept_name",  "$$dept_name" ] },
+                       ]
+                    }
+                 }
+              },
+         ],
+         as: "section"
+       }
+    },
+  {
+      $project:
+        {
+            _id: 0,
+            'name': '$instructor.name',
+            'title': '$section.course.title',
+        },
+        
+  },
+  { "$unwind": "$name" },
+  { "$unwind": "$title" },
+  { $sort : { 'name': 1, 'title': 1 }},
+]);
+```
+![image](https://user-images.githubusercontent.com/22045163/83509168-fd38d080-a505-11ea-9eea-0b1743229234.png)
